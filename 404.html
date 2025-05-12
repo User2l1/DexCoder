@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Lost in the Digital Cosmos</title>
+    <style>
+      /* Global Styles */
+      body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #0a0a0a;
+        color: #fff;
+        text-align: center;
+        overflow: hidden;
+      }
+      h1 {
+        font-size: 5rem;
+        margin-top: 20vh;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        color: #fff;
+        text-shadow: 
+          0 0 10px #ff6347, 
+          0 0 20px #ff6347, 
+          0 0 30px #ff6347,
+          0 0 40px #ff6347;
+        animation: ledEffect 1.5s infinite alternate;
+      }
+      p {
+        font-size: 1.2rem;
+        margin-top: 20px;
+      }
+      .button {
+        margin-top: 30px;
+        padding: 12px 30px;
+        background: #ff6347;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        text-decoration: none;
+      }
+      .button:hover {
+        background: #ff4500;
+      }
+
+      /* LED Effect Animation */
+      @keyframes ledEffect {
+        0% {
+          text-shadow: 
+            0 0 10px #ff6347, 
+            0 0 20px #ff6347, 
+            0 0 30px #ff6347,
+            0 0 40px #ff6347;
+        }
+        100% {
+          text-shadow: 
+            0 0 5px #ff6347, 
+            0 0 10px #ff6347, 
+            0 0 15px #ff6347,
+            0 0 20px #ff6347;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>404</h1>
+    <p>Oops! You've ventured into uncharted territory.</p>
+    <p>Our AI is recalibrating to get you back on track.</p>
+    <p>In the meantime, enjoy this cosmic detour!</p>
+    <a href="index.html" class="button">Return to the Homepage</a>
+  </body>
+</html>
