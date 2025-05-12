@@ -1,275 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>DexCoder - Multi Language Live Editor</title>
-  <link rel="icon" href="https://dex.com/img/logo.png" type="image/png">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" integrity="sha512-dE9sF2+txefBkJIfT9SG5kNJxTO28tL2pA98zBtKmUEM+WZpJoNtnNS2pKmAn70ZGuNfq2upD3PfNeD6XsZV7Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <style>
-    :root {
-      --bg-color: #0d1b2a;
-      --editor-bg: #1b263b;
-      --border-color: #415a77;
-      --text-color: #e0e1dd;
-      --accent: #778da9;
-      --error: #ff6b6b;
-    }
+<script>
+  // Check for saved user info
+  const user = JSON.parse(localStorage.getItem('dexcoderUser'));
 
-    body {
-      margin: 0;
-      height: 100vh;
-      font-family: Consolas, monospace;
-      color: var(--text-color);
-      background-color: var(--bg-color);
-      display: flex;
-      flex-direction: column;
-    }
+  // Redirect if not logged in
+  if (!user || !user.username) {
+    window.location.href = 'signup.html'; // Redirect to sign-up if not signed in
+  } else {
+    // Inject username and profile pic
+    const header = document.querySelector('header');
+    const userMenu = document.createElement('div');
+    userMenu.style.display = 'flex';
+    userMenu.style.alignItems = 'center';
+    userMenu.style.cursor = 'pointer';
+    userMenu.style.position = 'relative';
 
-    header {
-      background-color: var(--border-color);
-      padding: 10px 20px;
-      font-size: 1.2em;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+    const avatar = document.createElement('img');
+    avatar.src = user.pfp || 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/340px-Default_pfp.svg.png';
+    avatar.alt = 'PFP';
+    avatar.style.width = '32px';
+    avatar.style.height = '32px';
+    avatar.style.borderRadius = '50%';
+    avatar.style.marginLeft = '15px';
 
-    .rounded-square {
-      width: 10px;
-      height: 10px;
-      border-radius: 2px;
-      background-color: #fff;
-      margin-right: 5px;
-    }
+    const menu = document.createElement('div');
+    menu.style.position = 'absolute';
+    menu.style.top = '40px';
+    menu.style.right = '0';
+    menu.style.background = 'var(--editor-bg)';
+    menu.style.padding = '10px';
+    menu.style.border = '1px solid var(--border-color)';
+    menu.style.display = 'none';
+    menu.style.zIndex = '999';
 
-    .settings {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
+    const usernameEl = document.createElement('div');
+    usernameEl.textContent = `Signed in as ${user.username}`;
+    usernameEl.style.marginBottom = '10px';
 
-    select, button {
-      background: var(--accent);
-      border: none;
-      padding: 5px 10px;
-      color: #fff;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    button:hover, select:hover {
-      background: #a3b8d4;
-    }
-
-    .main {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      flex-grow: 1;
-      background: var(--border-color);
-    }
-
-    textarea {
-      width: 100%;
-      height: 100%;
-      padding: 10px;
-      background-color: var(--editor-bg);
-      color: var(--text-color);
-      border: none;
-      resize: none;
-      outline: none;
-      font-size: 14px;
-      font-family: monospace;
-    }
-
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background-color: white;
-    }
-
-    footer {
-      background: var(--editor-bg);
-      padding: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.9em;
-      border-top: 1px solid var(--border-color);
-    }
-
-    .console {
-      color: var(--accent);
-      white-space: pre-wrap;
-    }
-
-    .console.error {
-      color: var(--error);
-    }
-
-    .tabs {
-      display: flex;
-      gap: 10px;
-      background: var(--editor-bg);
-      padding: 5px 10px;
-    }
-
-    .tab {
-      padding: 5px 10px;
-      background: var(--accent);
-      color: white;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-
-    .tab.active {
-      background: #a3b8d4;
-      color: black;
-    }
-
-    .full-html {
-      grid-template-columns: 1fr;
-    }
-
-    pre code {
-      background: var(--editor-bg);
-      color: var(--text-color);
-      display: block;
-      padding: 1em;
-      overflow-x: auto;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <div style="display: flex; align-items: center;">
-      <div class="rounded-square"></div>
-      <strong>DexCoder</strong>
-    </div>
-    <div class="settings">
-      <label for="theme">Theme:</label>
-      <select id="theme" onchange="toggleTheme(this.value)">
-        <option value="dark">Dark</option>
-        <option value="light">Light</option>
-      </select>
-      <button onclick="runCode()">Run ▶</button>
-    </div>
-  </header>
-
-  <div class="tabs" id="languageTabs">
-    <div class="tab active" onclick="switchLang('html', event)">HTML</div>
-    <div class="tab" onclick="switchLang('css', event)">CSS</div>
-    <div class="tab" onclick="switchLang('js', event)">JavaScript</div>
-    <div class="tab" onclick="switchLang('python', event)">Python</div>
-    <div class="tab" onclick="switchLang('java', event)">Java</div>
-    <div class="tab" onclick="switchLang('cpp', event)">C++</div>
-    <div class="tab" onclick="switchLang('c', event)">C</div>
-  </div>
-
-  <div class="main" id="mainArea">
-    <textarea id="editor"></textarea>
-    <iframe id="preview"></iframe>
-  </div>
-
-  <footer>
-    <div class="console" id="console">Console: Ready</div>
-  </footer>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-Llcyub9mvU+sh4ZKkQpV4GHDcEtHDXEc/iwZGTzjPS5UgZKH2vCxuWbUq7ubVXz79abthvlRdeZWDVqzZK4H1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script>
-    const editor = document.getElementById('editor');
-    const consoleEl = document.getElementById('console');
-    const iframe = document.getElementById('preview');
-    const mainArea = document.getElementById('mainArea');
-
-    const codeSamples = {
-      html: `<!DOCTYPE html>
-<html>
-  <head>
-    <style>
-      body { background: #eee; }
-    </style>
-  </head>
-  <body>
-    <h1>Hello DexCoder</h1>
-    <p>This is a live HTML preview.</p>
-  </body>
-</html>`
+    const logoutBtn = document.createElement('button');
+    logoutBtn.textContent = 'Sign Out';
+    logoutBtn.onclick = () => {
+      localStorage.removeItem('dexcoderUser');
+      location.reload();
     };
 
-    let currentLang = 'html';
+    menu.appendChild(usernameEl);
+    menu.appendChild(logoutBtn);
 
-    function switchLang(lang, event) {
-      currentLang = lang;
-      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-      event.target.classList.add('active');
-      editor.value = codeSamples[lang] || '';
-      mainArea.classList.toggle('full-html', lang === 'html');
+    userMenu.appendChild(avatar);
+    userMenu.appendChild(menu);
 
-      if (lang === 'html') runCode();
-      else iframe.srcdoc = '<pre style="padding: 1em;">Output will be shown in the console.</pre>';
+    avatar.onclick = () => {
+      menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    };
 
-      consoleEl.textContent = `Console: Switched to ${lang.toUpperCase()}`;
-      consoleEl.className = 'console';
-    }
-
-    async function runCode() {
-      if (currentLang === 'html') {
-        try {
-          iframe.srcdoc = editor.value;
-          consoleEl.textContent = 'Console: HTML executed';
-          consoleEl.className = 'console';
-        } catch (err) {
-          consoleEl.textContent = 'Error: ' + err.message;
-          consoleEl.className = 'console error';
-        }
-      } else if (['python', 'java', 'c', 'cpp'].includes(currentLang)) {
-        const payload = {
-          language: currentLang,
-          version: '*',
-          files: [{ name: 'main', content: editor.value }]
-        };
-
-        try {
-          const response = await fetch('https://emkc.org/api/v2/piston/execute', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          const result = await response.json();
-          consoleEl.textContent = 'Output:\n' + result.run.output;
-          consoleEl.className = 'console';
-        } catch (err) {
-          consoleEl.textContent = 'Error running code: ' + err.message;
-          consoleEl.className = 'console error';
-        }
-      } else {
-        consoleEl.textContent = 'Execution not supported for this language.';
-        consoleEl.className = 'console error';
-      }
-    }
-
-    function toggleTheme(mode) {
-      if (mode === 'light') {
-        document.documentElement.style.setProperty('--bg-color', '#f0f0f0');
-        document.documentElement.style.setProperty('--editor-bg', '#ffffff');
-        document.documentElement.style.setProperty('--border-color', '#cccccc');
-        document.documentElement.style.setProperty('--text-color', '#000000');
-        document.documentElement.style.setProperty('--accent', '#0077cc');
-      } else {
-        document.documentElement.style.setProperty('--bg-color', '#0d1b2a');
-        document.documentElement.style.setProperty('--editor-bg', '#1b263b');
-        document.documentElement.style.setProperty('--border-color', '#415a77');
-        document.documentElement.style.setProperty('--text-color', '#e0e1dd');
-        document.documentElement.style.setProperty('--accent', '#778da9');
-      }
-    }
-
-    window.onload = () => {
-      editor.value = codeSamples.html;
-      runCode();
-    }
-  </script>
-</body>
-</html>
+    header.appendChild(userMenu);
+  }
+</script>
