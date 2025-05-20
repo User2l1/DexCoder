@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title> kali Terminal</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #00ff00;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 20px;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    #terminal {
+      white-space: pre-wrap;
+      line-height: 1.4;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      height: 20px;
+      background-color: #00ff00;
+      animation: blink 1s infinite;
+      vertical-align: bottom;
+    }
+
+    @keyframes blink {
+      0%, 50%, 100% { opacity: 1; }
+      25%, 75% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div id="terminal"></div>
+  <script>
+    const terminal = document.getElementById('terminal');
+    const fakeCommands = [
+      "Connecting to mainframe...",
+      "Bypassing firewall...",
+      "Access granted.",
+      "Downloading data packets...",
+      "Decrypting encryption level 7...",
+      "Injecting faux script into kernel...",
+      "Generating spoof log entries...",
+      "Tracing virtual IP: 192.168.133.7...",
+      "Ping response received: latency 0.0003ms",
+      "Uploading payload: [##########] 100%",
+      "Simulating port scan on subnet 255.255.0.0...",
+      "Establishing secure tunnel via Quantum-Proxy...",
+      "Disabling alarms... OK",
+      "Mimicking root access... Success",
+      "Session logged. Exiting cleanly..."
+    ];
+
+    let i = 0;
+
+    function typeLine(line, index = 0) {
+      if (index < line.length) {
+        terminal.innerHTML += line[index];
+        setTimeout(() => typeLine(line, index + 1), 30);
+      } else {
+        terminal.innerHTML += '\n';
+        setTimeout(displayNextLine, 500);
+      }
+    }
+
+    function displayNextLine() {
+      if (i < fakeCommands.length) {
+        typeLine(fakeCommands[i]);
+        i++;
+      } else {
+        terminal.innerHTML += "\n<session terminated>\n";
+      }
+    }
+
+    // Start typing
+    displayNextLine();
+  </script>
+</body>
+</html>
