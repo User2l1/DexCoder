@@ -171,19 +171,21 @@
   </div>
 
   <header>
-    <div style="display: flex; align-items: center;">
-      <div class="rounded-square"></div>
-      <strong>DexCoder</strong>
-    </div>
-    <div class="settings">
-      <label for="theme">Theme:</label>
-      <select id="theme" onchange="toggleTheme(this.value)">
-        <option value="dark">Dark</option>
-        <option value="light">Light</option>
-      </select>
-      <button onclick="runCode()">Run ▶</button>
-    </div>
-  </header>
+  <div style="display: flex; align-items: center;">
+    <div class="rounded-square"></div>
+    <strong>DexCoder</strong>
+  </div>
+  <div class="settings">
+    <label for="theme">Theme:</label>
+    <select id="theme" onchange="toggleTheme(this.value)">
+      <option value="dark">Dark</option>
+      <option value="light">Light</option>
+    </select>
+    <button onclick="runCode()">Run ▶</button>
+    <button onclick="window.location.href='https://your-hackersimulator-url.com'">Hacker Simulator</button>
+  </div>
+</header>
+
 
   <div class="tabs" id="languageTabs">
     <div class="tab active" onclick="switchLang('html', event)">HTML</div>
